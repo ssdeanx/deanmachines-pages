@@ -120,6 +120,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Document Metadata:** Used standard HTML `<title>` and `<meta>` tags within components (React 19 feature) instead of `next/head`.
 - **README:** Created a professional `README.md` file.
 
+## [0.5.0] - 2025-02-14 07:34:57 AM - Updated Navbar with Theme Toggle and GitHub Icon
+
+- **Navbar Component:**
+  - Added theme toggle icon (light/dark mode switch).
+  - Added GitHub icon linking to the project repository.
+  - Positioned the theme toggle and GitHub icons to the left of the sign-in buttons.
+  - Updated Material UI theme configuration to meet all requirements.
+
 [Unreleased]: https://github.com/ssdeanx/deanmachines-pages/compare/v0.3.0...HEAD
 [0.3.0]: https://github.com/ssdeanx/deanmachines-pages/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/ssdeanx/deanmachines-pages/compare/v0.1.0...v0.2.0

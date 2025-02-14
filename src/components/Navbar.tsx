@@ -23,7 +23,9 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Image from 'next/image';
 import { useSession, signIn, signOut } from "next-auth/react"
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-
+import GitHubIcon from '@mui/icons-material/GitHub'; // Import GitHub icon
+import Brightness4Icon from '@mui/icons-material/Brightness4'; // Import dark mode icon
+import Brightness7Icon from '@mui/icons-material/Brightness7'; // Import light mode icon
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -50,6 +52,7 @@ function Navbar() {
   const pathname = usePathname();
   const theme = useTheme();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [darkMode, setDarkMode] = useState(theme.palette.mode === 'dark'); // Track dark mode state
 
   const { data: session, status } = useSession();
 
@@ -59,6 +62,10 @@ function Navbar() {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
   };
 
 
@@ -195,6 +202,13 @@ function Navbar() {
           {/* Account/Sign In (Desktop) */}
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Stack direction="row" spacing={1} alignItems="center">
+            {/* Theme Toggle and GitHub Icon */}
+              <IconButton onClick={toggleDarkMode} color="inherit">
+                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+              <IconButton color="inherit" component="a" href="https://github.com/ssdeanx/deanmachines-pages" aria-label="GitHub">
+                <GitHubIcon />
+              </IconButton>
             {status === "authenticated" ? (
               <>
 

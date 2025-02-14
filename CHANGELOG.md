@@ -120,13 +120,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Document Metadata:** Used standard HTML `<title>` and `<meta>` tags within components (React 19 feature) instead of `next/head`.
 - **README:** Created a professional `README.md` file.
 
-## [0.5.0] - 2025-02-14 07:34:57 AM - Updated Navbar with Theme Toggle and GitHub Icon
+## [0.5.0] - 2025-02-14 07:39:25 AM - Enhanced Navbar Styling with Material UI
 
 - **Navbar Component:**
   - Added theme toggle icon (light/dark mode switch).
   - Added GitHub icon linking to the project repository.
   - Positioned the theme toggle and GitHub icons to the left of the sign-in buttons.
   - Updated Material UI theme configuration to meet all requirements.
+  - Implemented advanced, cutting-edge styling to the Navbar component using Material UI components, including Typography, Box, Stack, and IconButton.
+  - Improved the Navbar's visual appearance with modern typography, a sleek color scheme, subtle box shadows, smooth transitions, and improved spacing and alignment.
+  - Ensured that the Navbar is fully responsive and adapts seamlessly to different screen sizes and devices.
 
 [Unreleased]: https://github.com/ssdeanx/deanmachines-pages/compare/v0.3.0...HEAD
 [0.3.0]: https://github.com/ssdeanx/deanmachines-pages/compare/v0.2.0...v0.3.0

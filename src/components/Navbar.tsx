@@ -1,4 +1,4 @@
-// src/components/Navbar.tsx (Corrected, no tooltips)
+// src/components/Navbar.tsx
 'use client';
 import React, { useState } from 'react';
 import {
@@ -12,20 +12,20 @@ import {
   Container,
   Box,
   Avatar,
-  Stack
+  Stack,
+  useTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { usePathname } from 'next/navigation';
-import { useTheme } from '@mui/material/styles';
 import Link from 'next/link';
 import DropdownMenu from './DropdownMenu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Image from 'next/image';
 import { useSession, signIn, signOut } from "next-auth/react"
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import GitHubIcon from '@mui/icons-material/GitHub'; // Import GitHub icon
-import Brightness4Icon from '@mui/icons-material/Brightness4'; // Import dark mode icon
-import Brightness7Icon from '@mui/icons-material/Brightness7'; // Import light mode icon
+import GitHubIcon from '@mui/icons-material/GitHub';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -38,7 +38,7 @@ const navItems = [
 const accountDropdownItems = [
   { label: 'Profile', href: '/profile', icon: <AccountCircleIcon /> },
   { label: 'Settings', href: '/settings' },
-  { label: 'Logout',  icon: <AccountCircleIcon /> }, // Removed href
+  { label: 'Logout',  icon: <AccountCircleIcon /> },
 ];
 
 const docsDropdownItems = [
@@ -53,6 +53,7 @@ function Navbar() {
   const theme = useTheme();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [darkMode, setDarkMode] = useState(theme.palette.mode === 'dark'); // Track dark mode state
+  //const isMobile = useMediaQuery(theme.breakpoints.down('md')); //removing to make it work
 
   const { data: session, status } = useSession();
 
@@ -68,10 +69,8 @@ function Navbar() {
     setDarkMode(!darkMode);
   };
 
-
-
   return (
-    <AppBar position="static" sx={{ boxShadow: 1 }}>
+    <AppBar position="static" sx={{ boxShadow: 1, backgroundColor: theme.palette.background.paper }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ minHeight: { xs: 56, sm: 64 } }}>
           {/* Mobile Menu Icon */}
@@ -170,16 +169,16 @@ function Navbar() {
 
           {/* Navigation Links (Desktop) */}
            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                <Stack direction="row" spacing={1}>
+                <Stack direction="row" spacing={2}>
                     {navItems.map((item) => (
                     <Link key={item.label} href={item.href} passHref legacyBehavior>
                         <Button
                             component="a"
                             sx={{
-                                color: 'white',
+                                color: theme.palette.text.primary,
                                 display: 'block',
                                 '&:hover': {
-                                backgroundColor: theme.palette.primary.light,
+                                backgroundColor: theme.palette.action.hover,
                                 transform: 'scale(1.03)',
                                 },
                                 textTransform: 'none',
@@ -195,18 +194,18 @@ function Navbar() {
                         </Button>
                     </Link>
                   ))}
-                    <DropdownMenu label={<Typography sx={{color: 'white'}}>Docs </Typography>} items={docsDropdownItems} />
+                    <DropdownMenu label={<Typography sx={{color: theme.palette.text.primary}}>Docs </Typography>} items={docsDropdownItems} />
 
                 </Stack>
             </Box>
           {/* Account/Sign In (Desktop) */}
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack direction="row" spacing={2} alignItems="center">
             {/* Theme Toggle and GitHub Icon */}
-              <IconButton onClick={toggleDarkMode} color="inherit">
+              <IconButton onClick={toggleDarkMode} color="inherit" aria-label="toggle dark mode">
                 {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
               </IconButton>
-              <IconButton color="inherit" component="a" href="https://github.com/ssdeanx/deanmachines-pages" aria-label="GitHub">
+              <IconButton color="inherit" component="a" href="https://github.com/ssdeanx/deanmachines-pages" aria-label="GitHub" target="_blank">
                 <GitHubIcon />
               </IconButton>
             {status === "authenticated" ? (

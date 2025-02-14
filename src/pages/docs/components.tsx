@@ -1,50 +1,48 @@
 // pages/docs/components.tsx
-
 import React from 'react';
-import { Container, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
+import Link from 'next/link'; // Import Link
+import { Container, Typography, List, ListItem, ListItemText, Divider, Box } from '@mui/material';
+import Sidebar from '../../components/Sidebar';
+import Head from 'next/head';
+
+const documentationLinks = [
+  { text: 'Components', href: '/docs/components' },
+  { text: 'Contributing', href: '/docs/contributing' },
+  { text: 'FPV', href: '/docs/fpv' },
+];
 
 function ComponentsPage() {
   return (
-    <div>
-      <title>Components</title>
-      <meta name="description" content="Documentation for Dean Machines Components" />
+    <Box sx={{ display: 'flex' }}>
+        <Sidebar isOpen={true} onClose={() => {}} />
+        <Box sx={{ flexGrow: 1, p: 3 }}>
+            <Head>
+                <title>Components</title>
+                <meta name="description" content="Documentation for Dean Machines Components" />
+            </Head>
 
-      <Container maxWidth="md">
-        <Typography variant="h2" component="h1" gutterBottom align="center">
-          Components
-        </Typography>
+            <Container maxWidth="md">
+                <Typography variant="h2" component="h1" gutterBottom align="center">
+                    Components
+                </Typography>
 
-        <Typography paragraph>
-          This section provides documentation for the reusable components used in the Dean Machines project.
-        </Typography>
+                <Typography paragraph>
+                    This section provides documentation for the reusable components used in the Dean Machines project.
+                </Typography>
 
-        <List>
-          <ListItem>
-            <ListItemText primary="SensorDataDisplay" secondary="Displays sensor data in a consistent format. Supports units, different display types, and text sizes." />
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <ListItemText primary="DroneMap" secondary="Displays a map with the drone's location. Supports displaying a path of previous locations and different map types." />
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <ListItemText primary="TelemetryDisplay" secondary="Displays telemetry data. Supports a custom color for the value text." />
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <ListItemText primary="LidarDataDisplay" secondary="Displays lidar data as a 3D scatter plot. Includes a dropdown menu to select different color scales." />
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <ListItemText primary="IMUDataDisplay" secondary="Displays IMU data as a 3D scatter plot. Includes a dropdown menu to select different data types to display." />
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <ListItemText primary="FPVVideoDisplay" secondary="Displays a video stream from the FPV drone. Includes a loading state, error handling, and a responsive video element. The FPV page also includes an input box to allow the user to enter a video URL and save it for later use, and checkboxes for advanced options for receiving and displaying FPV video in real time." />
-          </ListItem>
-        </List>
-      </Container>
-    </div>
+                <List>
+                    {documentationLinks.map((link, index) => (
+                        <React.Fragment key={link.href}>
+                            <ListItem component={Link} href={link.href}>
+                                <ListItemText primary={link.text} />
+                            </ListItem>
+                            {index < documentationLinks.length - 1 && <Divider />}
+                        </React.Fragment>
+                    ))}
+                </List>
+            </Container>
+        </Box>
+    </Box>
   );
 }
 

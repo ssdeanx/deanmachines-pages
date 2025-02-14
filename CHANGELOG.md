@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Docs Pages Updated
+
+- **Documentation Pages:**
+    - Updated `src/pages/docs/contributing.tsx`, `src/pages/docs/fpv.tsx`, `src/pages/docs/requirements.tsx`, and `src/pages/docs/components.tsx` to use `<Head>` component for `<title>` and `<meta>` tags.
+    - Replaced `Sidebar` component with `Navbar` component in `src/pages/docs.tsx`.
+    - Removed unused imports and variables from all modified documentation pages to resolve ESLint warnings.
+    - Reimplemented interactive elements in `src/pages/docs/fpv.tsx` based on user feedback.
+
 ### Authentication Type System Improvements
 
 - **NextAuth Type Declarations:**
@@ -110,17 +118,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Uses a type guard (`isMachine`) for robust type checking of API data.
   - Renders a responsive grid of `MachineCard` components.
   - Includes a loading state using `Suspense`.
-- **About Page:** Created a basic `pages/about.tsx`.
-- **Contact Page:** Created `pages/contact.tsx` that uses the `ContactForm` component.
-- **API Route:** Implemented `pages/api/contact.ts` to handle contact form submissions (placeholder logic).
-- **Theming:** Configured Material UI theming in `pages/_app.tsx` with:
-  - Custom primary and secondary colors (blood red).
-  - Light and dark mode support, automatically adapting to user preference.
-  - Custom background and text colors for both modes.
-- **Document Metadata:** Used standard HTML `<title>` and `<meta>` tags within components (React 19 feature) instead of `next/head`.
-- **README:** Created a professional `README.md` file.
+  - **About Page:** Created a basic `pages/about.tsx`.
+  - **Contact Page:** Created `pages/contact.tsx` that uses the `ContactForm` component.
+  - **API Route:** Implemented `pages/api/contact.ts` to handle contact form submissions (placeholder logic).
+  - **Theming:** Configured Material UI theming in `pages/_app.tsx` with:
+    - Custom primary and secondary colors (blood red).
+    - Light and dark mode support, automatically adapting to user preference.
+    - Custom background and text colors for both modes.
+  - **Document Metadata:** Used standard HTML `<title>` and `<meta>` tags within components (React 19 feature) instead of `next/head`.
+  - **README:** Created a professional `README.md` file.
 
-## [0.5.0] - 2025-02-14 07:39:25 AM - Enhanced Navbar Styling with Material UI
+## [0.5.0] - 2025-02-14 07:41:49 AM - Enhanced Navbar Styling with Material UI
 
 - **Navbar Component:**
   - Added theme toggle icon (light/dark mode switch).
@@ -129,7 +137,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated Material UI theme configuration to meet all requirements.
   - Implemented advanced, cutting-edge styling to the Navbar component using Material UI components, including Typography, Box, Stack, and IconButton.
   - Improved the Navbar's visual appearance with modern typography, a sleek color scheme, subtle box shadows, smooth transitions, and improved spacing and alignment.
-  - Ensured that the Navbar is fully responsive and adapts seamlessly to different screen sizes and devices.
+  - Ensured that the Navbar is fully responsive and adapts seamlessly to different screen sizes and devices, though isMobile is unused.
 
 [Unreleased]: https://github.com/ssdeanx/deanmachines-pages/compare/v0.3.0...HEAD
 [0.3.0]: https://github.com/ssdeanx/deanmachines-pages/compare/v0.2.0...v0.3.0

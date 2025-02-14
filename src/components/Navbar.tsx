@@ -26,6 +26,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { alpha } from '@mui/material/styles'; // Import alpha for transparency
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -52,8 +53,7 @@ function Navbar() {
   const pathname = usePathname();
   const theme = useTheme();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-  const [darkMode, setDarkMode] = useState(theme.palette.mode === 'dark'); // Track dark mode state
-  //const isMobile = useMediaQuery(theme.breakpoints.down('md')); //removing to make it work
+  const [darkMode, setDarkMode] = useState(theme.palette.mode === 'dark');
 
   const { data: session, status } = useSession();
 
@@ -70,7 +70,11 @@ function Navbar() {
   };
 
   return (
-    <AppBar position="static" sx={{ boxShadow: 1, backgroundColor: theme.palette.background.paper }}>
+    <AppBar position="static" sx={{
+      boxShadow: 1,
+      backgroundColor: theme.palette.background.paper,
+      transition: 'background-color 0.3s ease', // Add transition
+    }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ minHeight: { xs: 56, sm: 64 } }}>
           {/* Mobile Menu Icon */}
@@ -178,7 +182,7 @@ function Navbar() {
                                 color: theme.palette.text.primary,
                                 display: 'block',
                                 '&:hover': {
-                                backgroundColor: theme.palette.action.hover,
+                                backgroundColor: alpha(theme.palette.primary.light, 0.15), // Use alpha for subtle hover
                                 transform: 'scale(1.03)',
                                 },
                                 textTransform: 'none',
@@ -186,7 +190,8 @@ function Navbar() {
                                 transition: 'transform 0.2s ease-in-out, background-color 0.2s ease-in-out',
                                 borderBottom: pathname === item.href ? `2px solid ${theme.palette.secondary.main}` : 'none',
                                 borderRadius: 0,
-                                pb: 0.5
+                                pb: 0.5,
+                                fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif', // Modern font
                             }}
                             color={pathname === item.href ? 'secondary' : 'inherit'}
                         >

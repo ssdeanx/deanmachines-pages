@@ -1,6 +1,6 @@
 // src/components/Navbar.tsx
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -14,6 +14,9 @@ import {
   Avatar,
   Stack,
   useTheme,
+  Slide,
+  useScrollTrigger,
+  Fade,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { usePathname } from 'next/navigation';
@@ -21,229 +24,245 @@ import Link from 'next/link';
 import DropdownMenu from './DropdownMenu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Image from 'next/image';
-import { useSession, signIn, signOut } from "next-auth/react"
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { useSession, signIn } from "next-auth/react";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { alpha } from '@mui/material/styles'; // Import alpha for transparency
+import { alpha, styled } from '@mui/material/styles';
 
-const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Products', href: '/machines' },
-  { label: 'Contact', href: '/contact' },
-    { label: 'Requirements', href: '/requirements'}
-];
+// Styled components
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  background: 'transparent',
+  backdropFilter: 'blur(10px)',
+  backgroundColor: alpha(theme.palette.background.default, 0.9),
+  transition: 'all 0.3s ease-in-out',
+  boxShadow: 'none',
+  borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+}));
 
-const accountDropdownItems = [
-  { label: 'Profile', href: '/profile', icon: <AccountCircleIcon /> },
-  { label: 'Settings', href: '/settings' },
-  { label: 'Logout',  icon: <AccountCircleIcon /> },
-];
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+  minHeight: 56,
+  [theme.breakpoints.up('sm')]: {
+    minHeight: 64,
+  },
+  display: 'flex',
+  justifyContent: 'space-between',
+}));
 
-const docsDropdownItems = [
-    { label: 'Components', href: '/docs/components'},
-    { label: 'Contributing', href: '/docs/contributing'},
-    { label: 'FPV', href: '/docs/fpv'},
+const NavButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.text.primary,
+  position: 'relative',
+  textTransform: 'none',
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    width: '0%',
+    height: '2px',
+    bottom: 0,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    backgroundColor: theme.palette.secondary.main,
+    transition: 'width 0.3s ease-in-out',
+  },
+  '&:hover::after': {
+    width: '100%',
+  },
+}));
 
-]
+interface HideOnScrollProps {
+  children: React.ReactElement;
+}
+
+function HideOnScroll({ children }: HideOnScrollProps) {
+  const trigger = useScrollTrigger();
+  return (
+    <Slide appear={false} direction="down" in={!trigger}>
+      {children}
+    </Slide>
+  );
+}
 
 function Navbar() {
   const pathname = usePathname();
   const theme = useTheme();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [darkMode, setDarkMode] = useState(theme.palette.mode === 'dark');
-
   const { data: session, status } = useSession();
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  const navItems = [
+    { label: 'Home', href: '/' },
+    { label: 'About', href: '/about' },
+    { label: 'Products', href: '/machines' },
+    { label: 'Contact', href: '/contact' },
+    { label: 'Requirements', href: '/requirements' }
+  ];
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+  const docsDropdownItems = [
+    { label: 'Components', href: '/docs/components'},
+    { label: 'Contributing', href: '/docs/contributing'},
+    { label: 'FPV', href: '/docs/fpv'},
+  ];
 
   return (
-    <AppBar position="static" sx={{
-      boxShadow: 1,
-      backgroundColor: theme.palette.background.paper,
-      transition: 'background-color 0.3s ease', // Add transition
-    }}>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ minHeight: { xs: 56, sm: 64 } }}>
-          {/* Mobile Menu Icon */}
-          <IconButton
-            size="large"
-            aria-label="menu"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleOpenNavMenu}
-            color="inherit"
-            sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}
-          >
-            <MenuIcon />
-          </IconButton>
+    <HideOnScroll>
+      <StyledAppBar
+        sx={{
+          backgroundColor: isScrolled 
+            ? alpha(theme.palette.background.default, 0.95)
+            : 'transparent',
+          boxShadow: isScrolled ? 1 : 0,
+        }}
+      >
+        <Container maxWidth="xl">
+          <StyledToolbar>
+            {/* Logo */}
+            <Fade in timeout={1000}>
+              <Box sx={{ 
+                width: {xs: '100px', md: '150px'}, 
+                height: {xs: '33px', md: '50px'}, 
+                position: 'relative',
+                cursor: 'pointer'
+              }}>
+                <Link href="/">
+                  <Image
+                    src="/logo.png"
+                    alt="DeanMachines Logo"
+                    fill
+                    style={{ objectFit: 'contain' }}
+                    priority
+                  />
+                </Link>
+              </Box>
+            </Fade>
 
-          {/* Mobile Menu */}
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorElNav}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-            open={Boolean(anchorElNav)}
-            onClose={handleCloseNavMenu}
-            sx={{
-              display: { xs: 'block', md: 'none' },
-            }}
-            TransitionProps={{
-                timeout: 300
-            }}
-          >
-           {navItems.map((item) => (
-            <MenuItem key={item.label} onClick={handleCloseNavMenu}>
-                <Link href={item.href} style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'block' }}>
-                  <Typography
-                    textAlign="center"
-                    color={pathname === item.href ? 'primary' : 'textPrimary'}
+            {/* Desktop Navigation */}
+            <Box sx={{ 
+              display: { xs: 'none', md: 'flex' },
+              gap: 2,
+              alignItems: 'center'
+            }}>
+              <Stack direction="row" spacing={2}>
+                {navItems.map((item) => (
+                  <Fade key={item.label} in timeout={1000}>
+                    <Link href={item.href} passHref style={{ textDecoration: 'none' }}>
+                      <NavButton
+                        sx={{
+                          '&::after': {
+                            width: pathname === item.href ? '100%' : '0%',
+                          },
+                        }}
+                      >
+                        {item.label}
+                      </NavButton>
+                    </Link>
+                  </Fade>
+                ))}
+                <DropdownMenu 
+                  label={
+                    <Typography sx={{ color: theme.palette.text.primary }}>
+                      Docs
+                    </Typography>
+                  } 
+                  items={docsDropdownItems} 
+                />
+              </Stack>
+
+              {/* Theme Toggle and Actions */}
+              <Stack direction="row" spacing={1} alignItems="center">
+                <IconButton 
+                  onClick={() => setDarkMode(!darkMode)}
+                  sx={{ 
+                    transition: 'transform 0.3s ease-in-out',
+                    '&:hover': { transform: 'rotate(180deg)' }
+                  }}
+                >
+                  {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+                </IconButton>
+                <IconButton 
+                  component="a"
+                  href="https://github.com/ssdeanx/deanmachines-pages"
+                  target="_blank"
+                  sx={{ 
+                    transition: 'transform 0.2s ease-in-out',
+                    '&:hover': { transform: 'scale(1.1)' }
+                  }}
+                >
+                  <GitHubIcon />
+                </IconButton>
+                {status === "authenticated" ? (
+                  <Avatar 
+                    sx={{ 
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s ease-in-out',
+                      '&:hover': { transform: 'scale(1.1)' }
+                    }}
+                    src={session.user?.image || undefined}
+                  >
+                    {session.user?.name?.charAt(0) || <AccountCircleIcon />}
+                  </Avatar>
+                ) : (
+                  <Button
+                    variant="contained"
+                    onClick={() => signIn('google')}
                     sx={{
-                      borderBottom: pathname === item.href ? `2px solid ${theme.palette.primary.main}` : 'none',
-                      display: 'block',
-                      width: '100%',
-                      pb: 0.5
+                      background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                      transition: 'transform 0.2s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: 4,
+                      }
                     }}
                   >
-                    {item.label}
-                  </Typography>
-                </Link>
-              </MenuItem>
-            ))}
-              {/* Mobile Docs Dropdown */}
-            <MenuItem >
-                <DropdownMenu label={<Typography>Docs <KeyboardArrowDownIcon/></Typography>} items={docsDropdownItems} />
-            </MenuItem>
-             {/* Mobile Account Dropdown/Sign In */}
-            {status === "authenticated" ? (
-              <MenuItem>
-                <DropdownMenu
-                  label={
-                    <>
-                      <Avatar sx={{ bgcolor: theme.palette.secondary.main, mr: 1 }}>
-                        <AccountCircleIcon />
-                      </Avatar>
-                      <Typography>{session.user?.name || 'User'}</Typography>
-                    </>
-                  }
-                  items={accountDropdownItems.map(item => ({ ...item, onClick: item.label === 'Logout' ? signOut : undefined }))}
-
-                />
-              </MenuItem>
-               ) : (
-                  <MenuItem onClick={() => signIn()}>
-                    <Typography>Sign In</Typography>
-                </MenuItem>
-            )}
-          </Menu>
-
-          {/* Logo (Mobile and Desktop) */}
-          <Box sx={{ width: {xs: '100px', md: '150px'}, height: {xs: '33px', md: '50px'}, position: 'relative', mr: 2 }}>
-            <Link href="/">
-              <Image
-                src="/logo.png"
-                alt="DeanMachines Logo"
-                fill
-                style={{ objectFit: 'contain' }}
-                placeholder="blur"
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
-              />
-            </Link>
-          </Box>
-
-          {/* Navigation Links (Desktop) */}
-           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                <Stack direction="row" spacing={2}>
-                    {navItems.map((item) => (
-                    <Link key={item.label} href={item.href} passHref legacyBehavior>
-                        <Button
-                            component="a"
-                            sx={{
-                                color: theme.palette.text.primary,
-                                display: 'block',
-                                '&:hover': {
-                                backgroundColor: alpha(theme.palette.primary.light, 0.15), // Use alpha for subtle hover
-                                transform: 'scale(1.03)',
-                                },
-                                textTransform: 'none',
-                                fontSize: '0.9rem',
-                                transition: 'transform 0.2s ease-in-out, background-color 0.2s ease-in-out',
-                                borderBottom: pathname === item.href ? `2px solid ${theme.palette.secondary.main}` : 'none',
-                                borderRadius: 0,
-                                pb: 0.5,
-                                fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif', // Modern font
-                            }}
-                            color={pathname === item.href ? 'secondary' : 'inherit'}
-                        >
-                            {item.label}
-                        </Button>
-                    </Link>
-                  ))}
-                    <DropdownMenu label={<Typography sx={{color: theme.palette.text.primary}}>Docs </Typography>} items={docsDropdownItems} />
-
-                </Stack>
+                    Sign In
+                  </Button>
+                )}
+              </Stack>
             </Box>
-          {/* Account/Sign In (Desktop) */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Stack direction="row" spacing={2} alignItems="center">
-            {/* Theme Toggle and GitHub Icon */}
-              <IconButton onClick={toggleDarkMode} color="inherit" aria-label="toggle dark mode">
-                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-              </IconButton>
-              <IconButton color="inherit" component="a" href="https://github.com/ssdeanx/deanmachines-pages" aria-label="GitHub" target="_blank">
-                <GitHubIcon />
-              </IconButton>
-            {status === "authenticated" ? (
-              <>
 
-                <DropdownMenu
-                  label={
-                    <Avatar sx={{ bgcolor: theme.palette.secondary.main }}>
-                      <AccountCircleIcon />
-                    </Avatar>
-                  }
-                    items={accountDropdownItems.map(item => ({ ...item, onClick: item.label === 'Logout' ? signOut : undefined }))}
-                />
-
-              </>
-            ) : (
-              <>
-                <Button
-                    onClick={() => signIn('google')}
-                    variant="contained"
-                    color="secondary"
-                    sx={{ textTransform: 'none',  }}
+            {/* Mobile Menu */}
+            <IconButton
+              sx={{ display: { xs: 'flex', md: 'none' } }}
+              onClick={(e) => setAnchorElNav(e.currentTarget)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              anchorEl={anchorElNav}
+              open={Boolean(anchorElNav)}
+              onClose={() => setAnchorElNav(null)}
+              sx={{ display: { xs: 'block', md: 'none' } }}
+              TransitionComponent={Fade}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+              {navItems.concat(docsDropdownItems).map((item) => (
+                <MenuItem 
+                  key={item.label}
+                  onClick={() => setAnchorElNav(null)}
+                  component={Link}
+                  href={item.href}
+                  sx={{
+                    color: pathname === item.href ? theme.palette.primary.main : 'inherit',
+                    transition: 'background-color 0.2s ease-in-out',
+                  }}
                 >
-                  Sign In
-                </Button>
-                {/* GitHub Sign In Removed */}
-              </>
-            )}
-            </Stack>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </StyledToolbar>
+        </Container>
+      </StyledAppBar>
+    </HideOnScroll>
   );
 }
 

@@ -57,4 +57,4 @@ node_modules
 
 # OS generated files (good practice to include)
 .DS_Store
-Thumbs.db
+/genaisrc

@@ -7,9 +7,10 @@ import { motion } from 'framer-motion';
 
 interface LayoutProps {
   children: React.ReactNode;
+  toggleColorMode: () => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ children, toggleColorMode }) => {
   const theme = useTheme();
 
   const pageVariants = {
@@ -38,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           : `linear-gradient(to bottom, ${theme.palette.background.default}, ${theme.palette.grey[100]})`,
       }}
     >
-      <Navbar />
+      <Navbar toggleColorMode={toggleColorMode} />
       <Box
         component={motion.main}
         initial="initial"

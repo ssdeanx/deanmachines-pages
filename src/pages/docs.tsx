@@ -15,7 +15,7 @@ const documentationLinks = [
 function DocsPage() {
     return (
         <Box sx={{ display: 'flex' }}> {/* Added sx={{ display: 'flex' }} */}
-            <Navbar />
+            <Navbar toggleColorMode={() => {}} />
             <Sidebar isOpen={true} onClose={() => {}} /> {/* Added Sidebar */}
             <Box sx={{ flexGrow: 1, p: 3 }}>
                 <Head> {/* Added Head component */}

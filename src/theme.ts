@@ -47,7 +47,7 @@ const typography: ThemeOptions['typography'] = {
   },
   h2: {
     fontWeight: 700,
-    fontSize: '2rem',
+    fontSize: '2.rem',
     marginBottom: '0.75rem',
   },
   h5: {

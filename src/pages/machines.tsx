@@ -107,8 +107,9 @@ export default function Page() {
                 </Typography>
               </Container>
             ) : (
-                <MachinesPage />
-
+                <Suspense fallback={<Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} flexWrap="wrap"><MachineCardSkeleton/><MachineCardSkeleton/><MachineCardSkeleton/></Stack>}>
+                  <MachinesPage />
+                </Suspense>
             )}
         </Suspense>
     )

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/core": "^0.34.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/inter": "^5.1.1",
@@ -40,10 +41,12 @@
     "@eslint/eslintrc": "^3.2.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.17.19",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.1.4",
+    "nodemailer": "^6.10.0",
     "prisma": "^5.22.0",
     "typescript": "^5.7.3"
   }

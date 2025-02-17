@@ -92,3 +92,9 @@ model Contact {
     user        User?    @relation(fields: [userId], references: [id])
 }
 
+model Setting {
+    id    String @id @default(cuid())
+    key   String @unique
+    value String
+    @@map("Settings")
+}

@@ -4,11 +4,10 @@ import AdminLayout from '../../components/AdminLayout';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Chip } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Chip, Typography } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 import { User, Role } from '@prisma/client'; // Import User and Role
 import { z } from 'zod';
-import { userSchema } from '@/lib/validationSchemas';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -22,6 +21,9 @@ function AdminUsersPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const { data, error, mutate } = useSWR<{users: User[], totalCount: number}>('/api/admin/users?page=1&pageSize=10', fetcher); // Fetch users
+    if (error) {
+        console.error("Failed to load users", error);
+    }
     const [editUser, setEditUser] = useState<User | null>(null);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
@@ -161,8 +163,7 @@ function AdminUsersPage() {
                 <DataGrid
                     rows={data?.users || []}
                     columns={columns}
-                    pageSize={10}
-                    rowsPerPageOptions={[10]}
+                    pagination
                     getRowId={(row) => row.id}
                 />
             </div>

@@ -1,13 +1,13 @@
 // pages/_app.tsx
-import React, { useState, useEffect, useMemo } from 'react';
-import { AppProps } from 'next/app';
+import type React from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import type { AppProps } from 'next/app';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import themeConfig from '../theme'; // Import your theme configuration
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { SessionProvider } from "next-auth/react";
 import { useRouter } from 'next/router';
-import '../global.css'
 import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
 

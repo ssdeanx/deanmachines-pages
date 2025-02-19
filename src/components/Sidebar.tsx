@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import Link from 'next/link';
 import { styled, useTheme } from '@mui/material/styles';

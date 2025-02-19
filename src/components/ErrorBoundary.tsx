@@ -14,6 +14,20 @@ interface State {
   errorInfo?: ErrorInfo;
 }
 
+const errorBoxStyles = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: '60vh',
+  textAlign: 'center',
+  gap: 2,
+};
+
+const errorDetailsStyles = {
+  mt: 4, textAlign: 'left', width: '100%'
+};
+
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -45,15 +59,7 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         <Container maxWidth="sm">
           <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '60vh',
-              textAlign: 'center',
-              gap: 2,
-            }}
+            sx={errorBoxStyles}
           >
             <Typography variant="h4" component="h1" gutterBottom>
               Oops! Something went wrong
@@ -70,7 +76,7 @@ class ErrorBoundary extends Component<Props, State> {
               Refresh Page
             </Button>
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <Box sx={{ mt: 4, textAlign: 'left', width: '100%' }}>
+              <Box sx={errorDetailsStyles}>
                 <Typography variant="h6" color="error" gutterBottom>
                   Error Details:
                 </Typography>

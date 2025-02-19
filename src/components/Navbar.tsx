@@ -20,6 +20,9 @@ import {
   Divider,
   alpha,
   useMediaQuery,
+  Tooltip,
+  Fade,
+  useScrollTrigger,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { usePathname, useRouter } from 'next/navigation';
@@ -46,235 +49,410 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 const drawerWidth = 240;
 
 const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Machines', href: '/machines' },
-  { label: 'Contact', href: '/contact' },
-  { label: 'Docs', href: '/docs' },
+  { label: 'Home', href: '/', icon: <HomeIcon /> },
+  { label: 'About', href: '/about', icon: <InfoIcon /> },
+  { label: 'Machines', href: '/machines', icon: <BuildIcon /> },
+  { label: 'Contact', href: '/contact', icon: <ContactMailIcon /> },
+  { label: 'Docs', href: '/docs', icon: <DescriptionIcon /> },
 ];
-
-// Removing unused docsDropdownItems array
 
 function Navbar({ toggleColorMode }: { toggleColorMode: () => void }) {
   const theme = useTheme();
   const { data: session, status } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [signInOpen, setSignInOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
-  const [signInOpen, setSignInOpen] = useState(false);
   const pathname = usePathname();
 
-  const handleSignInClick = () => {
-    setSignInOpen(true);
-  };
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+  });
 
-  const handleSignInClose = () => {
-    setSignInOpen(false);
-  };
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const handleSignInClick = () => setSignInOpen(true);
+  const handleSignInClose = () => setSignInOpen(false);
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px' }}>
+    <Box 
+      onClick={handleDrawerToggle} 
+      sx={{ 
+        textAlign: 'center',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        p: 2,
+        borderBottom: `1px solid ${theme.palette.divider}`
+      }}>
         <Link href="/" passHref>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Image src="/dean-machines-logo.png" alt="Dean Machines Logo" width={50} height={50} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold', ml: 1, color: theme.palette.text.primary }}>
+            <Image 
+              src="/dean-machines-logo.png" 
+              alt="Dean Machines Logo" 
+              width={40} 
+              height={40}
+              style={{ borderRadius: '8px' }}
+            />
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 600,
+                ml: 1.5,
+                background: theme.palette.mode === 'dark'
+                  ? 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)'
+                  : 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}
+            >
               DeanMachines
             </Typography>
           </Box>
         </Link>
-        <IconButton
-          color="inherit"
-          aria-label="close drawer"
-          edge="end"
-          onClick={handleDrawerToggle}
-        >
+        <IconButton onClick={handleDrawerToggle} sx={{ p: 1 }}>
           <CloseIcon />
         </IconButton>
       </Box>
-      <Divider />
-      <List>
+
+      <List sx={{ flexGrow: 1, py: 2 }}>
         {navItems.map((item) => (
-          <ListItem key={item.label} component={Link} href={item.href} >
-            <ListItemIcon>
-              {item.label === 'Home' ? <HomeIcon /> :
-                item.label === 'About' ? <InfoIcon /> :
-                  item.label === 'Machines' ? <BuildIcon /> :
-                    item.label === 'Contact' ? <ContactMailIcon /> :
-                      <DescriptionIcon />}
+          <ListItem 
+            key={item.label} 
+            component={Link} 
+            href={item.href}
+            sx={{
+              py: 1.5,
+              px: 3,
+              '&:hover': {
+                backgroundColor: alpha(theme.palette.primary.main, 0.08),
+              },
+              ...(pathname === item.href && {
+                backgroundColor: alpha(theme.palette.primary.main, 0.12),
+              })
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 40 }}>
+              {item.icon}
             </ListItemIcon>
-            <ListItemText primary={item.label} />
+            <ListItemText 
+              primary={item.label}
+              primaryTypographyProps={{
+                fontSize: '0.9rem',
+                fontWeight: pathname === item.href ? 600 : 400
+              }}
+            />
           </ListItem>
         ))}
       </List>
+
       <Divider />
-      {status === "loading" ? (
-        <Typography>Loading...</Typography>
-      ) : session?.user ? (
-        <>
-          <List>
+
+      <Box sx={{ p: 2 }}>
+        {status === "loading" ? (
+          <Typography variant="body2" color="text.secondary">Loading...</Typography>
+        ) : session?.user ? (
+          <Stack spacing={2}>
             {session.user.role === 'ADMIN' && (
-              <ListItem component={Link} href="/admin">
-                <ListItemIcon>
-                  <AdminPanelSettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Admin" />
-              </ListItem>
+              <Button
+                component={Link}
+                href="/admin"
+                startIcon={<AdminPanelSettingsIcon />}
+                fullWidth
+                variant="outlined"
+                size="small"
+              >
+                Admin Panel
+              </Button>
             )}
-            <ListItem component={Link} href="/dashboard">
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
-            </ListItem>
-            <ListItem onClick={() => { signOut(); router.push('/'); }}>
-              <ListItemIcon>
-                <ExitToAppIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sign Out" />
-            </ListItem>
-          </List>
-        </>
-      ) : (
-        <List>
-          <ListItem onClick={handleSignInClick}>
-            <ListItemIcon>
-              <VpnKeyIcon />
-            </ListItemIcon>
-            <ListItemText primary="Sign in" />
-          </ListItem>
-          <ListItem component={Link} href="/signup">
-            <ListItemIcon>
-              <PersonAddIcon />
-            </ListItemIcon>
-            <ListItemText primary="Sign up" />
-          </ListItem>
-        </List>
-      )}
+            <Button
+              component={Link}
+              href="/dashboard"
+              startIcon={<DashboardIcon />}
+              fullWidth
+              variant="outlined"
+              size="small"
+            >
+              Dashboard
+            </Button>
+            <Button
+              onClick={() => { signOut(); router.push('/'); }}
+              startIcon={<ExitToAppIcon />}
+              fullWidth
+              variant="contained"
+              color="error"
+              size="small"
+            >
+              Sign Out
+            </Button>
+          </Stack>
+        ) : (
+          <Stack spacing={2}>
+            <Button
+              onClick={handleSignInClick}
+              startIcon={<VpnKeyIcon />}
+              fullWidth
+              variant="contained"
+              size="small"
+            >
+              Sign In
+            </Button>
+            <Button
+              component={Link}
+              href="/signup"
+              startIcon={<PersonAddIcon />}
+              fullWidth
+              variant="outlined"
+              size="small"
+            >
+              Sign Up
+            </Button>
+          </Stack>
+        )}
+      </Box>
     </Box>
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <>
       <AppBar
         position="fixed"
+        elevation={trigger ? 4 : 0}
         sx={{
-          backgroundColor: alpha(theme.palette.background.default, 0.95),
+          backgroundColor: alpha(theme.palette.background.default, trigger ? 0.95 : 0.98),
           backdropFilter: 'blur(10px)',
-          boxShadow: `0px 2px 10px ${alpha(theme.palette.grey[900], 0.1)}`,
+          transition: theme.transitions.create(['background-color', 'box-shadow', 'color'], {
+            duration: theme.transitions.duration.short,
+          }),
         }}
       >
         <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            {/* Logo */}
+          <Toolbar 
+            disableGutters 
+            sx={{ 
+              minHeight: { xs: 64, sm: 70 },
+              transition: theme.transitions.create('min-height', {
+                duration: theme.transitions.duration.short,
+              }),
+            }}
+          >
             <Link href="/" passHref>
-              <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-                <Image src="/dean-machines-logo.png" alt="Dean Machines Logo" width={50} height={50} />
-                <Typography variant="h6" sx={{ fontWeight: 'bold', ml: 1, color: theme.palette.text.primary }}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                flexGrow: { xs: 1, md: 0 },
+                mr: { md: 4 }
+              }}>
+                <Image 
+                  src="/dean-machines-logo.png" 
+                  alt="Dean Machines Logo" 
+                  width={40} 
+                  height={40}
+                  style={{ borderRadius: '8px' }}
+                />
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 600,
+                    ml: 1.5,
+                    background: theme.palette.mode === 'dark'
+                      ? 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)'
+                      : 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  }}
+                >
                   DeanMachines
                 </Typography>
               </Box>
             </Link>
 
             {/* Desktop Navigation */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
-              <Stack direction="row" spacing={2}>
-                {navItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    component={Link}
-                    href={item.href}
-                    color="inherit"
-                    sx={{
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        width: '100%',
-                        height: '2px',
-                        bottom: 0,
-                        left: 0,
-                        backgroundColor: theme.palette.secondary.main,
-                        transform: pathname === item.href ? 'scaleX(1)' : 'scaleX(0)',
-                        transition: 'transform 0.3s ease-in-out',
-                      },
-                      '&:hover::after': {
-                        transform: 'scaleX(1)',
-                      },
-                    }}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
-              </Stack>
+            <Box sx={{ 
+              display: { xs: 'none', md: 'flex' }, 
+              alignItems: 'center',
+              flexGrow: 1,
+              gap: 1
+            }}>
+              {navItems.map((item) => (
+                <Button
+                  key={item.label}
+                  component={Link}
+                  href={item.href}
+                  color="inherit"
+                  startIcon={item.icon}
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    position: 'relative',
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      width: '100%',
+                      height: '2px',
+                      bottom: 0,
+                      left: 0,
+                      backgroundColor: 'primary.main',
+                      transform: pathname === item.href ? 'scaleX(1)' : 'scaleX(0)',
+                      transition: theme.transitions.create('transform', {
+                        duration: theme.transitions.duration.shorter,
+                      }),
+                    },
+                    '&:hover::after': {
+                      transform: 'scaleX(1)',
+                    },
+                  }}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </Box>
 
-              {/* Theme Toggle and Actions */}
-              <Stack direction="row" spacing={1} alignItems="center">
-                <IconButton sx={{ ml: 1 }} onClick={toggleColorMode} color="inherit">
+            {/* Theme Toggle and Actions */}
+            <Stack 
+              direction="row" 
+              spacing={{ xs: 1, sm: 2 }} 
+              alignItems="center"
+              sx={{ ml: 'auto' }}
+            >
+              <Tooltip title={`Switch to ${theme.palette.mode === 'dark' ? 'light' : 'dark'} mode`}>
+                <IconButton 
+                  onClick={toggleColorMode}
+                  color="inherit"
+                  sx={{ 
+                    transition: theme.transitions.create('transform', {
+                      duration: theme.transitions.duration.shorter,
+                    }),
+                    '&:hover': {
+                      transform: 'rotate(12deg)',
+                    },
+                  }}
+                >
                   {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
                 </IconButton>
+              </Tooltip>
+
+              <Tooltip title="View source code">
                 <IconButton
                   component="a"
                   href="https://github.com/ssdeanx/deanmachines-pages"
                   target="_blank"
+                  rel="noopener noreferrer"
                   color="inherit"
+                  sx={{
+                    transition: theme.transitions.create('transform', {
+                      duration: theme.transitions.duration.shorter,
+                    }),
+                    '&:hover': {
+                      transform: 'scale(1.1)',
+                    },
+                  }}
                 >
                   <GitHubIcon />
                 </IconButton>
-                {status === "authenticated" ? (
-                  <IconButton onClick={() => signOut()}>
+              </Tooltip>
+
+              {status === "authenticated" ? (
+                <Tooltip title="Account settings">
+                  <IconButton 
+                    onClick={() => signOut()}
+                    sx={{
+                      p: 0.5,
+                      border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                      transition: theme.transitions.create(['border-color', 'transform'], {
+                        duration: theme.transitions.duration.shorter,
+                      }),
+                      '&:hover': {
+                        borderColor: 'primary.main',
+                        transform: 'scale(1.1)',
+                      },
+                    }}
+                  >
                     <Avatar
-                      sx={{ width: 32, height: 32 }}
+                      sx={{ 
+                        width: 32, 
+                        height: 32,
+                        bgcolor: theme.palette.primary.main 
+                      }}
                       src={session.user?.image || undefined}
                     >
                       {session.user?.name?.charAt(0) || <AccountCircleIcon />}
                     </Avatar>
                   </IconButton>
-                ) : (
-                  <Button color="inherit" onClick={handleSignInClick}>
-                    Sign In
-                  </Button>
-                )}
-              </Stack>
-            </Box>
+                </Tooltip>
+              ) : (
+                <Button 
+                  color="primary"
+                  variant="contained"
+                  onClick={handleSignInClick}
+                  sx={{
+                    px: { xs: 2, sm: 3 },
+                    py: 1,
+                    borderRadius: '20px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                  }}
+                >
+                  Sign In
+                </Button>
+              )}
 
-            {/* Mobile Menu Icon */}
-            {isMobile && (
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="end"
-                onClick={handleDrawerToggle}
-              >
-                <MenuIcon />
-              </IconButton>
-            )}
+              {/* Mobile Menu Icon */}
+              {isMobile && (
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  edge="end"
+                  onClick={handleDrawerToggle}
+                  sx={{
+                    ml: 1,
+                    '&:hover': {
+                      backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                    },
+                  }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              )}
+            </Stack>
           </Toolbar>
         </Container>
       </AppBar>
 
       {/* Mobile Drawer */}
-      <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Box>
+      <Drawer
+        variant="temporary"
+        anchor="right"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile
+        }}
+        PaperProps={{
+          sx: {
+            width: drawerWidth,
+            backgroundColor: theme.palette.background.default,
+          },
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { 
+            boxSizing: 'border-box',
+            width: drawerWidth,
+          },
+        }}
+      >
+        {drawer}
+      </Drawer>
+
       <SignInPopout open={signInOpen} onClose={handleSignInClose} />
-    </Box>
+    </>
   );
 }
 

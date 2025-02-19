@@ -9,6 +9,7 @@ import { SessionProvider } from "next-auth/react";
 import { useRouter } from 'next/router';
 import '../global.css'
 import Layout from '@/components/Layout';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 // --- Optimized Font Import (Inter + Roboto Mono) ---
 import '@fontsource/inter/400.css';
@@ -44,39 +45,34 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
     };
 
-
+    // Theme persistence
     useEffect(() => {
-        // Check local storage for saved theme preference
         const savedMode = localStorage.getItem('themeMode') as 'light' | 'dark' | null;
         if (savedMode) {
             setMode(savedMode);
         } else {
-            // Default to light mode if no preference is found
-            setMode('light');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            setMode(prefersDark ? 'dark' : 'light');
         }
     }, []);
 
     useEffect(() => {
-        // Save theme preference to local storage
         localStorage.setItem('themeMode', mode);
+        document.documentElement.setAttribute('data-theme', mode);
     }, [mode]);
 
-
-  return (
-    <SessionProvider session={session}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Layout toggleColorMode={toggleColorMode}>
-          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <main style={{ flexGrow: 1, paddingTop: isDocsPage ? '0px' : '64px' }}>
-            <Component {...pageProps} />
-          </main>
-          <Footer />
-          </div>
-        </Layout>
-      </ThemeProvider>
-    </SessionProvider>
-  );
+    return (
+        <ErrorBoundary>
+            <SessionProvider session={session}>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <Layout toggleColorMode={toggleColorMode}>
+                        <Component {...pageProps} />
+                    </Layout>
+                </ThemeProvider>
+            </SessionProvider>
+        </ErrorBoundary>
+    );
 }
 
 export default MyApp;

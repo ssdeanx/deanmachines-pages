@@ -41,6 +41,7 @@
   ],
   "exclude": [
     "src/pages/api/process-statement.ts",
+    "src/pages/langfus.ts",
     "node_modules"
   ]
 }

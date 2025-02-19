@@ -1,7 +1,29 @@
 // pages/machines.tsx (Correct)
+import React, { useState, useEffect } from 'react';
+import { 
+  Container, 
+  Stack, 
+  Typography, 
+  Skeleton, 
+  Box,
+  Grid,
+  Paper,
+  InputBase,
+  IconButton,
+  Chip,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+  Fade,
+  useTheme,
+  SelectChangeEvent
+} from '@mui/material';
 import MachineCard from '../components/MachineCard';
-import { Container, Stack, Typography, Skeleton, Box } from '@mui/material'; // Import Stack and Box
-import { Suspense, useState, useEffect } from 'react';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import SortIcon from '@mui/icons-material/Sort';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Machine {
     id: number;
@@ -28,89 +50,279 @@ function isMachine(item: unknown): item is Machine {
 
 // Server Component to fetch the data
 async function getMachines() {
-    const YOUR_API_ENDPOINT = 'https://fakestoreapi.com/products'; // REPLACE THIS!
-    const res = await fetch(YOUR_API_ENDPOINT);
-
-    if (!res.ok) {
-      // Throw an error if the response is not ok
-      throw new Error(`Failed to fetch machines: ${res.status}`);
-    }
-
-    const data = await res.json();
-
-    const machines: Machine[] = data.map((item: unknown) => {
-        if (isMachine(item)) {
-            return item;
-        } else {
-            console.error('Invalid machine data:', item);
-            return null; //  Return null for invalid items
+    const YOUR_API_ENDPOINT = 'https://fakestoreapi.com/products';
+    try {
+        const res = await fetch(YOUR_API_ENDPOINT);
+        if (!res.ok) {
+            throw new Error(`Failed to fetch machines: ${res.status}`);
         }
-    }).filter((item: Machine | null): item is Machine => item !== null); // Filter out null values
+        const data = await res.json();
+        const machines: Machine[] = data
+            .map((item: unknown) => {
+                if (isMachine(item)) {
+                    return item;
+                } else {
+                    console.error('Invalid machine data:', item);
+                    return null;
+                }
+            })
+            .filter((item: Machine | null): item is Machine => item !== null);
 
-
-    return machines
+        return machines;
+    } catch (error) {
+        console.error('Error fetching machines:', error);
+        throw error;
+    }
 }
 
 function MachineCardSkeleton() {
     return (
-        // Use Box instead of Grid item
-        <Box width={{ xs: '100%', sm: '50%', md: '33.33%' }}>
-            <Skeleton variant="rectangular" width={345} height={140} />
-            <Skeleton variant="text" width={200} sx={{ fontSize: 'h5.fontSize' }} />
-            <Skeleton variant="text" width={300} />
-            <Skeleton variant="text" width={100} sx={{ fontSize: 'h6.fontSize' }}/>
-            <Skeleton variant="text" width={80} />
-        </Box>
-    )
-}
-// Server Component to render
-async function MachinesPage() {
-    const machines = await getMachines();
-
-    return (
-        <div>
-            <title>Machines</title>
-            <meta name="description" content="List of machines" />
-            <Container>
-                <Typography variant="h2" component="h1" gutterBottom align="center">
-                    Our Machines
-                </Typography>
-                {/* Use Stack instead of Grid container */}
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} flexWrap="wrap">
-                    {machines.map((machine) => (
-                        // Use Box instead of Grid item
-                        <Box width={{ xs: '100%', sm: '50%', md: '33.33%' }} key={machine.id}>
-                            <MachineCard machine={machine} />
-                        </Box>
-                    ))}
-                </Stack>
-            </Container>
-        </div>
+        <Paper 
+            elevation={2}
+            sx={{ 
+                p: 2, 
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2
+            }}
+        >
+            <Skeleton variant="rectangular" width="100%" height={200} />
+            <Skeleton variant="text" width="70%" height={32} />
+            <Skeleton variant="text" width="90%" height={20} />
+            <Skeleton variant="text" width="40%" height={24} />
+            <Stack direction="row" spacing={1}>
+                <Skeleton variant="rounded" width={80} height={32} />
+                <Skeleton variant="rounded" width={80} height={32} />
+            </Stack>
+        </Paper>
     );
 }
 
-// Wrap with Suspense for loading state and handle errors
-export default function Page() {
+function MachinesPage() {
+    const theme = useTheme();
+    const [machines, setMachines] = useState<Machine[]>([]);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState('default');
+    const [categoryFilter, setCategoryFilter] = useState('all');
+    const [categories, setCategories] = useState<string[]>([]);
 
-      useEffect(() => {
-    // Clear any previous error when the component mounts or remounts
-    setError(null);
-  }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const data = await getMachines();
+                setMachines(data);
+                // Extract unique categories
+                const uniqueCategories = Array.from(new Set(data.map(machine => machine.category)));
+                setCategories(uniqueCategories);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'An error occurred');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+    };
+
+    const handleSortChange = (event: SelectChangeEvent) => {
+        setSortBy(event.target.value);
+    };
+
+    const handleCategoryChange = (event: SelectChangeEvent) => {
+        setCategoryFilter(event.target.value);
+    };
+
+    const filteredAndSortedMachines = machines
+        .filter(machine => {
+            const matchesSearch = machine.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                machine.description.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesCategory = categoryFilter === 'all' || machine.category === categoryFilter;
+            return matchesSearch && matchesCategory;
+        })
+        .sort((a, b) => {
+            switch (sortBy) {
+                case 'price-asc':
+                    return a.price - b.price;
+                case 'price-desc':
+                    return b.price - a.price;
+                case 'title':
+                    return a.title.localeCompare(b.title);
+                default:
+                    return 0;
+            }
+        });
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1
+        }
+    };
 
     return (
-        <Suspense fallback={<Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} flexWrap="wrap"><MachineCardSkeleton/><MachineCardSkeleton/><MachineCardSkeleton/></Stack>}>
-            {error ? (
-              <Container maxWidth="md" sx={{mt: 4}}>
-                <Typography variant="h5" color="error" align="center">
-                  Error: {error}
-                </Typography>
-              </Container>
-            ) : (
-                <Suspense fallback={<Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} flexWrap="wrap"><MachineCardSkeleton/><MachineCardSkeleton/><MachineCardSkeleton/></Stack>}>
-                  <MachinesPage />
-                </Suspense>
-            )}
-        </Suspense>
-    )
+        <Box 
+            sx={{ 
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                overflowY: 'auto',
+                height: '100%'
+            }}
+        >
+            <Container maxWidth="xl" sx={{ py: 4 }}>
+                <Box sx={{ mb: 6 }}>
+                    <Typography 
+                        variant="h2" 
+                        component="h1" 
+                        gutterBottom 
+                        align="center"
+                        sx={{
+                            background: theme.palette.mode === 'dark'
+                                ? 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)'
+                                : 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                        }}
+                    >
+                        Our Machines
+                    </Typography>
+                    
+                    {/* Search and Filter Section */}
+                    <Paper 
+                        elevation={2}
+                        sx={{ 
+                            p: 2, 
+                            mb: 4,
+                            background: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.05)'
+                                : 'rgba(0, 0, 0, 0.02)'
+                        }}
+                    >
+                        <Grid container spacing={2} alignItems="center">
+                            <Grid item xs={12} md={4}>
+                                <Paper
+                                    sx={{
+                                        p: '2px 4px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        border: `1px solid ${theme.palette.divider}`
+                                    }}
+                                >
+                                    <InputBase
+                                        sx={{ ml: 1, flex: 1 }}
+                                        placeholder="Search machines..."
+                                        value={searchQuery}
+                                        onChange={handleSearchChange}
+                                    />
+                                    <IconButton sx={{ p: '10px' }}>
+                                        <SearchIcon />
+                                    </IconButton>
+                                </Paper>
+                            </Grid>
+                            
+                            <Grid item xs={12} md={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <InputLabel>Sort By</InputLabel>
+                                    <Select
+                                        value={sortBy}
+                                        onChange={handleSortChange}
+                                        label="Sort By"
+                                        startAdornment={<SortIcon sx={{ mr: 1 }} />}
+                                    >
+                                        <MenuItem value="default">Default</MenuItem>
+                                        <MenuItem value="price-asc">Price: Low to High</MenuItem>
+                                        <MenuItem value="price-desc">Price: High to Low</MenuItem>
+                                        <MenuItem value="title">Title</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            
+                            <Grid item xs={12} md={4}>
+                                <FormControl fullWidth variant="outlined">
+                                    <InputLabel>Category</InputLabel>
+                                    <Select
+                                        value={categoryFilter}
+                                        onChange={handleCategoryChange}
+                                        label="Category"
+                                        startAdornment={<FilterListIcon sx={{ mr: 1 }} />}
+                                    >
+                                        <MenuItem value="all">All Categories</MenuItem>
+                                        {categories.map(category => (
+                                            <MenuItem key={category} value={category}>
+                                                {category}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+
+                    {error ? (
+                        <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'error.light' }}>
+                            <Typography variant="h6" color="error">
+                                Error: {error}
+                            </Typography>
+                        </Paper>
+                    ) : (
+                        <motion.div
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                        >
+                            <Grid container spacing={3}>
+                                <AnimatePresence>
+                                    {loading ? (
+                                        // Skeleton loading state
+                                        Array.from(new Array(6)).map((_, index) => (
+                                            <Grid item xs={12} sm={6} md={4} key={`skeleton-${index}`}>
+                                                <MachineCardSkeleton />
+                                            </Grid>
+                                        ))
+                                    ) : (
+                                        // Actual machines
+                                        filteredAndSortedMachines.map((machine) => (
+                                            <Grid item xs={12} sm={6} md={4} key={machine.id}>
+                                                <motion.div variants={itemVariants}>
+                                                    <MachineCard machine={machine} />
+                                                </motion.div>
+                                            </Grid>
+                                        ))
+                                    )}
+                                </AnimatePresence>
+                            </Grid>
+                        </motion.div>
+                    )}
+
+                    {!loading && filteredAndSortedMachines.length === 0 && (
+                        <Paper sx={{ p: 4, textAlign: 'center' }}>
+                            <Typography variant="h6" color="text.secondary">
+                                No machines found matching your criteria
+                            </Typography>
+                        </Paper>
+                    )}
+                </Box>
+            </Container>
+        </Box>
+    );
 }
+
+export default MachinesPage;

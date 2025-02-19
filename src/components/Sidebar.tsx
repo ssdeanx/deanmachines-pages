@@ -1,63 +1,71 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import Link from 'next/link';
-import { styled } from '@mui/material/styles';
-import DescriptionIcon from '@mui/icons-material/Description'; // New Icons
+import { styled, useTheme } from '@mui/material/styles';
+import DescriptionIcon from '@mui/icons-material/Description';
 import BookIcon from '@mui/icons-material/Book';
 import CodeIcon from '@mui/icons-material/Code';
 import RuleIcon from '@mui/icons-material/Rule';
+import ArticleIcon from '@mui/icons-material/Article';
+import DvrIcon from '@mui/icons-material/Dvr';
+import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const StyledDrawer = styled(Drawer)(() => ({
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
-    width: 240,
-    // background: `linear-gradient(45deg, #424242 30%, #303030 90%)`, // Old gradient background
-    background: '#333', // Solid dark grey background
-    color: '#fff',
-    borderRight: 0,
-    boxShadow: '0.25rem 0.25rem 0.5rem rgba(0,0,0,0.25)',
-    transition: 'width 0.3s ease-in-out',
+    width: 260,
+    background: theme.palette.grey[900],
+    color: theme.palette.common.white,
+    borderRight: `1px solid ${theme.palette.divider}`,
+    boxShadow: theme.shadows[8],
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
 }));
 
-const StyledListItemButton = styled(ListItemButton)(() => ({
+const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   '&:hover': {
-    // backgroundColor: '#90caf9', // Old hover color
-    backgroundColor: '#555', // Lighter grey hover color
-    color: '#fff', // Keep text white on hover
+    backgroundColor: theme.palette.action.hover,
     '& .MuiListItemIcon-root': {
-      color: '#fff', // Keep icon white on hover
+      color: theme.palette.primary.light,
     },
-    transition: 'background-color 0.2s ease-in-out', // Smooth hover transition
   },
   '&.Mui-selected': {
-    backgroundColor: '#1976d2',
-    color: '#fff',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    '&:hover': {
+      backgroundColor: theme.palette.primary.dark,
+    },
     '& .MuiListItemIcon-root': {
-      color: '#fff',
+      color: theme.palette.common.white,
     },
   },
-  '&.Mui-selected:hover': {
-    backgroundColor: '#0d47a1',
-  },
 }));
 
-const StyledListItemIcon = styled(ListItemIcon)(() => ({
-  color: '#9E9E9E', // Keep icon color as is
+const StyledListItemIcon = styled(ListItemIcon)(({ theme }) => ({
+  color: theme.palette.grey[500],
+  minWidth: 40,
 }));
 
-const StyledListItemText = styled(ListItemText)(() => ({
+const StyledListItemText = styled(ListItemText)(({ theme }) => ({
   '& .MuiTypography-root': {
     fontWeight: 500,
+    color: theme.palette.grey[300],
   },
 }));
 
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => (
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const theme = useTheme();
+
+  return (
     <StyledDrawer
       open={isOpen}
       onClose={onClose}
@@ -67,24 +75,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => (
       <List>
         {['Components', 'Contributing', 'FPV', 'Requirements'].map((text, index) => (
           <ListItem key={text} disablePadding>
-            <Link href={`/docs/${text.toLowerCase()}`} passHref>
-                <StyledListItemButton
-                  selected={`/docs/${text.toLowerCase()}` === window.location.pathname}
-                >
-                  <StyledListItemIcon>
-                    {/* Updated Icons based on index */}
-                    {index === 0 && <CodeIcon />}
-                    {index === 1 && <BookIcon />}
-                    {index === 2 && <DescriptionIcon />}
-                    {index === 3 && <RuleIcon />}
-                  </StyledListItemIcon>
-                  <StyledListItemText primary={text} />
-                </StyledListItemButton>
+            <Link href={`/docs/${text.toLowerCase()}`} passHref legacyBehavior>
+              <StyledListItemButton
+                selected={`/docs/${text.toLowerCase()}` === window.location.pathname}
+              >
+                <StyledListItemIcon>
+                  {index === 0 && <LibraryBooksIcon />} {index === 0 && <DescriptionIcon />}
+                  {index === 1 && <ArticleIcon />} {index === 1 && <BookIcon />}
+                  {index === 2 && <DvrIcon />} {index === 2 && <CodeIcon />}
+                  {index === 3 && <AssignmentLateIcon />} {index === 3 && <RuleIcon />}
+                </StyledListItemIcon>
+                <StyledListItemText primary={text} />
+              </StyledListItemButton>
             </Link>
           </ListItem>
         ))}
       </List>
     </StyledDrawer>
   );
+};
 
 export default Sidebar;

@@ -1,103 +1,104 @@
 // pages/requirements/data.tsx
 
 import React from 'react';
-import { Container, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
-
+import { Container, Typography, Box, Paper, Grid } from '@mui/material';
+import StorageIcon from '@mui/icons-material/Storage';
+import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
+import DataObjectIcon from '@mui/icons-material/DataObject';
+import SpeedIcon from '@mui/icons-material/Speed';
 
 function DataRequirementsPage() {
-  return (
-    <div>
-      <title>Data Requirements</title>
-      <meta name="description" content="Data Requirements for Dean Machines" />
+  const sections = [
+    {
+      title: 'Data Collection Requirements',
+      icon: <FlightTakeoffIcon fontSize="large" />,
+      content: [
+        'Minimum 10 minutes of continuous flight',
+        'Various Flight Patterns Required:',
+        '- Hover',
+        '- Forward flight',
+        '- Figure-8',
+        '- Obstacle navigation'
+      ]
+    },
+    {
+      title: 'Data Format Standards',
+      icon: <DataObjectIcon fontSize="large" />,
+      content: [
+        'Timestamp: Unix timestamp (ms)',
+        'GPS: lat (number), lon (number), alt (number in meters), accuracy (number in meters)',
+        'IMU: acceleration (Vec3: m/s²), gyroscope (Vec3: rad/s), magnetometer (Vec3: μT)',
+        'LiDAR: distance (number in meters), strength (number)',
+        'Camera: resolution (string: \'1280x720\'), fps (number), format (string: \'h264\')',
+        'Radio: frequency (number in MHz), signalStrength (number in dBm), bandwidth (number in MHz)'
+      ]
+    },
+    {
+      title: 'Quality Standards',
+      icon: <SpeedIcon fontSize="large" />,
+      content: [
+        'Camera: 720p minimum at 30fps',
+        'LiDAR: 100Hz minimum sampling rate',
+        'IMU: 200Hz minimum sampling rate',
+        'GPS: 10Hz minimum update rate',
+        'Radio: 433MHz band captures at 2MSPS'
+      ]
+    }
+  ];
 
-      <Container maxWidth="md">
-        <Typography variant="h2" component="h1" gutterBottom align="center">
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box textAlign="center" sx={{ mb: 6 }}>
+        <Typography variant="h2" component="h1" gutterBottom>
           Data Requirements
         </Typography>
-
-        <Typography variant="h5" component="h2" gutterBottom>
-            Data Collection Requirements
+        <Typography variant="subtitle1" color="text.secondary">
+          Data collection and quality standards for Dean Machines
         </Typography>
-        <List>
-            <ListItem>
-                <ListItemText primary="Minimum 10 minutes of continuous flight"/>
-            </ListItem>
-            <ListItem>
-                <ListItemText primary="Various Flight Patterns Required:"/>
-            </ListItem>
-        </List>
-        <List component="div" disablePadding sx={{ pl: 4 }}>
-            <ListItem>
-                <ListItemText primary="- Hover" />
-            </ListItem>
-            <ListItem>
-                <ListItemText primary="- Forward flight" />
-            </ListItem>
-            <ListItem>
-                <ListItemText primary="- Figure-8" />
-            </ListItem>
-            <ListItem>
-                <ListItemText primary="- Obstacle navigation" />
-            </ListItem>
-        </List>
+      </Box>
 
-        <Divider sx={{ my: 2 }} />
-
-        <Typography variant="h5" component="h2" gutterBottom>
-            Data Format Standards
-        </Typography>
-        <List>
-          <ListItem>
-            <ListItemText primary="Timestamp: Unix timestamp (ms)" />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="GPS: lat (number), lon (number), alt (number in meters), accuracy (number in meters)" />
-          </ListItem>
-          <ListItem>
-              <ListItemText
-                primary="IMU:"
-                secondary={
-                  <>
-                    acceleration (Vec3: m/s²), gyroscope (Vec3: rad/s), magnetometer (Vec3: μT)
-                  </>
+      <Grid container spacing={4}>
+        {sections.map((section) => (
+          <Grid item xs={12} key={section.title}>
+            <Paper sx={{ p: 4 }}>
+              <Box display="flex" alignItems="center" mb={3}>
+                {section.icon}
+                <Typography variant="h4" component="h2" sx={{ ml: 2 }}>
+                  {section.title}
+                </Typography>
+              </Box>
+              <Box component="ul" sx={{ 
+                listStyle: 'none',
+                p: 0,
+                m: 0,
+                '& > li': {
+                  py: 1,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                  '&:last-child': {
+                    borderBottom: 'none'
+                  }
                 }
-              />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="LiDAR: distance (number in meters), strength (number)" />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="Camera: resolution (string: '1280x720'), fps (number), format (string: 'h264')" />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="Radio: frequency (number in MHz), signalStrength (number in dBm), bandwidth (number in MHz)" />
-          </ListItem>
-        </List>
-
-        <Divider sx={{ my: 2 }} />
-
-        <Typography variant="h5" component="h2" gutterBottom>
-            Quality Standards
-        </Typography>
-        <List>
-          <ListItem>
-            <ListItemText primary="Camera: 720p minimum at 30fps" />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="LiDAR: 100Hz minimum sampling rate" />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="IMU: 200Hz minimum sampling rate" />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="GPS: 10Hz minimum update rate" />
-          </ListItem>
-          <ListItem>
-            <ListItemText primary="Radio: 433MHz band captures at 2MSPS" />
-          </ListItem>
-        </List>
-      </Container>
-    </div>
+              }}>
+                {section.content.map((item, index) => (
+                  <Box component="li" key={index}>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        pl: item.startsWith('-') ? 2 : 0,
+                        color: item.startsWith('-') ? 'text.secondary' : 'text.primary'
+                      }}
+                    >
+                      {item}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
 }
 

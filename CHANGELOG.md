@@ -10,10 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Docs Pages Updated
 
 - **Documentation Pages:**
-    - Updated `src/pages/docs/contributing.tsx`, `src/pages/docs/fpv.tsx`, `src/pages/docs/requirements.tsx`, and `src/pages/docs/components.tsx` to use `<Head>` component for `<title>` and `<meta>` tags.
-    - Replaced `Sidebar` component with `Navbar` component in `src/pages/docs.tsx`.
-    - Removed unused imports and variables from all modified documentation pages to resolve ESLint warnings.
-    - Reimplemented interactive elements in `src/pages/docs/fpv.tsx` based on user feedback.
+  - Updated `src/pages/docs/contributing.tsx`, `src/pages/docs/fpv.tsx`, `src/pages/docs/requirements.tsx`, and `src/pages/docs/components.tsx` to use `<Head>` component for `<title>` and `<meta>` tags.
+  - Replaced `Sidebar` component with `Navbar` component in `src/pages/docs.tsx`.
+  - Removed unused imports and variables from all modified documentation pages to resolve ESLint warnings.
+  - Reimplemented interactive elements in `src/pages/docs/fpv.tsx` based on user feedback.
 
 ### Authentication Type System Improvements
 
@@ -29,6 +29,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved default role handling with proper type assertions
   - Removed duplicate type declarations from auth configuration
   - Enhanced type safety in token and session transformations
+
+### UI Component Enhancements
+
+- **Sidebar Icons Update:**
+  - Updated `Sidebar.tsx` to include additional icons for each sidebar item, displaying a total of 8 icons.
+
+- **LoadingSpinner Component Update:**
+  - Refactored `LoadingSpinner.tsx` to use separate `spinnerStyles` and `fullScreenStyles` variables for improved code readability and maintainability, aligning with MUI v6+ best practices.
+
+- **ErrorBoundary Component Update:**
+  - Refactored `ErrorBoundary.tsx` to a functional component using `useState` and `useCallback` hooks for improved code structure and alignment with MUI v6+ best practices.
 
 ## [0.3.0] - 2025-02-07
 

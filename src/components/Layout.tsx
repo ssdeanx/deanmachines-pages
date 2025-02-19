@@ -4,6 +4,7 @@ import Footer from './Footer';
 import Navbar from './Navbar';
 import { Box, Container, useTheme } from '@mui/material';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/router';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,6 +13,8 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, toggleColorMode }) => {
   const theme = useTheme();
+  const router = useRouter();
+  const isDocsPage = router.pathname.startsWith('/docs');
 
   const pageVariants = {
     initial: {
@@ -53,6 +56,8 @@ const Layout: React.FC<LayoutProps> = ({ children, toggleColorMode }) => {
           pb: 4,
           position: 'relative',
           zIndex: 1,
+          display: 'flex',
+          flexDirection: 'column',
           '&::before': {
             content: '""',
             position: 'absolute',

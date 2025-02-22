@@ -51,7 +51,7 @@ function AdminUsersPage() {
             field: 'role',
             headerName: 'Role',
             width: 150,
-            renderCell: (params) => ( // Custom cell renderer for role
+            renderCell: (params: { value: string }) => ( // Custom cell renderer for role
                 <Chip
                     label={params.value}
                     color={params.value === 'ADMIN' ? 'secondary' : 'default'}
@@ -64,7 +64,7 @@ function AdminUsersPage() {
             type: 'actions',
             headerName: 'Actions',
             width: 100,
-            getActions: (params) => [
+            getActions: (params: { row: User, id: string }) => [
                 <GridActionsCellItem
                     icon={<Edit />}
                     label="Edit"
@@ -164,7 +164,7 @@ function AdminUsersPage() {
                     rows={data?.users || []}
                     columns={columns}
                     pagination
-                    getRowId={(row) => row.id}
+                    getRowId={(row: User) => row.id}
                 />
             </div>
 

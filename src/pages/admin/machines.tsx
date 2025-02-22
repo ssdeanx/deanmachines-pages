@@ -1,6 +1,6 @@
 // src/pages/admin/machines.tsx (Added custom cell renderer, animations, and responsiveness, next/image component)
 import React from 'react';
-import { GridColDef, GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid';
+import { GridColDef, GridActionsCellItem, GridRenderCellParams, DataGrid, GridInitialState, GridPageSize } from '@mui/x-data-grid';
 import AdminLayout from '../../components/AdminLayout';
 import useSWR from 'swr';
 import { Machine } from '@prisma/client';
@@ -15,10 +15,20 @@ import { JSX } from 'react/jsx-runtime';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const DataGridDynamic = dynamic(() => import('@mui/x-data-grid').then((mod) => mod.DataGrid), {
-  ssr: false,
-  loading: () => <p>Loading DataGrid...</p>,
-});
+const DataGridDynamic = dynamic(
+  () => import('@mui/x-data-grid').then((mod) => mod.DataGrid),
+  {
+    ssr: false,
+    loading: () => <p>Loading DataGrid...</p>,
+  }
+) as React.ComponentType<DataGridProps>;
+
+interface DataGridProps {
+    rows: any[];
+    columns: GridColDef[];
+    initialState?: GridInitialState;
+    pageSizeOptions?: GridPageSize[];
+}
 
 export default function MachinesPage(): JSX.Element {
   const { data: machineData, error: machineError, mutate: machineMutate } = useSWR<{machines: Machine[], totalCount: number}>('/api/admin/machines?page=1&pageSize=5', fetcher);
@@ -64,7 +74,7 @@ export default function MachinesPage(): JSX.Element {
     headerName: 'Actions',
     width: 100,
     cellClassName: 'actions',
-    getActions: ({ id }) => [
+    getActions: ({ id }: { id: number | string }) => [
         //Added key prop
         <GridActionsCellItem
             key={"edit"+id}
@@ -228,7 +238,7 @@ export default function MachinesPage(): JSX.Element {
       </Button>
       <Box sx={{ height: 400, width: '100%' }}> {/*Use Box for responsive width*/}
         <DataGridDynamic
-          rows={machineData.machines}
+          {...(machineData?.machines ? { rows: machineData.machines } : { rows: [] })}
           columns={columns}
            initialState={{
               pagination: {

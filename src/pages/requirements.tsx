@@ -1,7 +1,7 @@
 // pages/requirements.tsx
 import React from 'react';
 import Link from 'next/link';
-import { Container, Typography, Box, Grid, Paper, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Container, Typography, Box, Paper, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import HardwareIcon from '@mui/icons-material/Memory';
 import CodeIcon from '@mui/icons-material/Code';
 import StorageIcon from '@mui/icons-material/Storage';
@@ -55,102 +55,106 @@ function RequirementsPage() {
         </Typography>
       </Box>
 
-      <Grid container spacing={4}>
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 4,
+      }}>
         {requirements.map((req) => (
-          <Grid item xs={12} md={4} key={req.path}>
-            <Paper 
-              sx={{ 
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: (theme) => theme.shadows[4]
-                }
-              }}
-            >
-              <Box sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Box sx={{ color: 'primary.main', mr: 2 }}>
-                    {req.icon}
-                  </Box>
-                  <Typography variant="h5" component="h2">
-                    {req.title}
-                  </Typography>
+          <Paper
+            key={req.path}
+            sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: (theme) => theme.shadows[4]
+              },
+              flex: '1 1 300px', // Grow, shrink, base width
+            }}
+          >
+            <Box sx={{ p: 3 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box sx={{ color: 'primary.main', mr: 2 }}>
+                  {req.icon}
                 </Box>
-                
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  {req.description}
+                <Typography variant="h5" component="h2">
+                  {req.title}
                 </Typography>
-
-                <Box component="ul" sx={{ 
-                  listStyle: 'none', 
-                  p: 0, 
-                  m: 0,
-                  mb: 3
-                }}>
-                  {req.items.map((item) => (
-                    <Box 
-                      component="li" 
-                      key={item}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        py: 0.5,
-                        color: 'text.secondary',
-                        '&::before': {
-                          content: '""',
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          backgroundColor: 'primary.main',
-                          mr: 1.5,
-                          opacity: 0.7
-                        }
-                      }}
-                    >
-                      <Typography variant="body2">
-                        {item}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
               </Box>
 
-              <Box sx={{ mt: 'auto', p: 2, pt: 0 }}>
-                <ListItemButton
-                  component={Link}
-                  href={req.path}
-                  sx={{
-                    borderRadius: 1,
-                    '&:hover': {
-                      backgroundColor: 'action.hover',
-                      '& .MuiListItemIcon-root': {
-                        transform: 'translateX(4px)'
+              <Typography variant="body2" color="text.secondary">
+                {req.description}
+              </Typography>
+
+              <Box component="ul" sx={{
+                listStyle: 'none',
+                p: 0,
+                m: 0,
+                mb: 3
+              }}>
+                {req.items.map((item) => (
+                  <Box
+                    component="li"
+                    key={item}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      py: 0.5,
+                      color: 'text.secondary',
+                      '&::before': {
+                        content: '""',
+                        width: '6px',
+                        height: '6px',
+                        borderRadius: '50%',
+                        backgroundColor: 'primary.main',
+                        mr: 1.5,
+                        opacity: 0.7
                       }
-                    }
-                  }}
-                >
-                  <ListItemText 
-                    primary="View Details" 
-                    primaryTypographyProps={{
-                      color: 'primary'
                     }}
-                  />
-                  <ListItemIcon sx={{ 
-                    minWidth: 'auto',
-                    color: 'primary.main',
-                    transition: 'transform 0.2s ease-in-out'
-                  }}>
-                    <ArrowForwardIcon />
-                  </ListItemIcon>
-                </ListItemButton>
+                  >
+                    <Typography variant="body2">
+                      {item}
+                    </Typography>
+                  </Box>
+                ))}
               </Box>
-            </Paper>
-          </Grid>
+            </Box>
+
+            <Box sx={{ mt: 'auto', p: 2, pt: 0 }}>
+              <ListItemButton
+                component={Link}
+                href={req.path}
+                sx={{
+                  borderRadius: 1,
+                  '&:hover': {
+                    backgroundColor: 'action.hover',
+                    '& .MuiListItemIcon-root': {
+                      transform: 'translateX(4px)'
+                    }
+                  }
+                }}
+              >
+                <ListItemText
+                  primary="View Details"
+                  primaryTypographyProps={{
+                    color: 'primary'
+                  }}
+                />
+                <ListItemIcon sx={{
+                  minWidth: 'auto',
+                  color: 'primary.main',
+                  transition: 'transform 0.2s ease-in-out'
+                }}>
+                  <ArrowForwardIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </Box>
+          </Paper>
         ))}
-      </Grid>
+      </Box>
     </Container>
   );
 }

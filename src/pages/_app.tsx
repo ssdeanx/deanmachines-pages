@@ -33,12 +33,13 @@ declare module '@mui/material/styles' { // TypeScript declaration merging
 }
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-    const [mode, setMode] = useState<'light' | 'dark'>('light'); // State for theme mode
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const [mode, setMode] = useState<'light' | 'dark'>(prefersDark ? 'dark' : 'light'); // State for theme mode, default to system preference
     const router = useRouter();
     const isDocsPage = router.pathname.startsWith('/docs');
 
     // Use useMemo to prevent unnecessary re-renders
-    const theme = useMemo(() => createTheme(themeConfig[mode]), [mode]);
+    const theme = useMemo(() => createTheme(themeConfig()), [mode]);
 
     // Function to toggle the theme
     const toggleColorMode = () => {

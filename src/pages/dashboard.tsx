@@ -1,9 +1,60 @@
-import React from 'react';
-import { Container, Typography, Box, Grid, Paper, Card, CardContent } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Typography, Box, Paper, Card, CardContent, CircularProgress } from '@mui/material';
 import { useSession } from 'next-auth/react';
+
+// Define the DashboardData type to match the API response
+interface DashboardData {
+  id: string;
+  overview: string;
+  quickActions: string;
+  recentActivity: string;
+  createdAt: string; // Or Date, depending on your API
+  updatedAt: string; // Or Date, depending on your API
+}
 
 function DashboardPage() {
   const { data: session, status } = useSession();
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null); // Use the defined type
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('/api/dashboard');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: DashboardData = await response.json(); // Explicitly type the response
+        setDashboardData(data);
+      } catch (e: any) {
+        setError(e instanceof Error ? e : new Error(String(e)));
+        console.error("Failed to fetch dashboard data:", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4, color: 'red' }}>
+        <Typography variant="h6">Error: {error?.message || 'An unexpected error occurred'}</Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -16,45 +67,74 @@ function DashboardPage() {
         </Typography>
       </Box>
 
-      <Grid container spacing={3}>
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 3,
+      }}>
         {/* Overview Section */}
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, height: '100%' }}>
-            <Typography variant="h5" gutterBottom>
-              Overview
-            </Typography>
+        <Paper sx={{
+          p: 3,
+          height: '100%',
+          flex: '1 1 60%',
+          minWidth: '300px',
+        }}>
+          <Typography variant="h5" gutterBottom>
+            Overview
+          </Typography>
+          {dashboardData ? (
             <Typography variant="body2" color="text.secondary">
-              [Temporary: Overview statistics and charts will be displayed here]
+              {dashboardData.overview}
             </Typography>
-          </Paper>
-        </Grid>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No overview data available.
+            </Typography>
+          )}
+        </Paper>
 
         {/* Quick Actions */}
-        <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3, height: '100%' }}>
-            <Typography variant="h5" gutterBottom>
-              Quick Actions
-            </Typography>
+        <Paper sx={{
+          p: 3,
+          height: '100%',
+          flex: '1 1 30%',
+          minWidth: '200px',
+        }}>
+          <Typography variant="h5" gutterBottom>
+            Quick Actions
+          </Typography>
+          {dashboardData ? (
             <Typography variant="body2" color="text.secondary">
-              [Temporary: Action buttons and links will be added here]
+              {dashboardData.quickActions}
             </Typography>
-          </Paper>
-        </Grid>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No quick actions data available.
+            </Typography>
+          )}
+        </Paper>
 
         {/* Recent Activity */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Recent Activity
-              </Typography>
+        <Card sx={{
+          flex: '1 1 100%',
+          mt: 3,
+        }}>
+          <CardContent>
+            <Typography variant="h5" gutterBottom>
+              Recent Activity
+            </Typography>
+            {dashboardData ? (
               <Typography variant="body2" color="text.secondary">
-                [Temporary: Activity feed will be displayed here]
+                {dashboardData.recentActivity}
               </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No recent activity data available.
+              </Typography>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
     </Container>
   );
 }

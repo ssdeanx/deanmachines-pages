@@ -10,6 +10,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 import DvrIcon from '@mui/icons-material/Dvr';
 import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import { useEffect, useState } from 'react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -61,9 +62,13 @@ const StyledListItemText = styled(ListItemText)(({ theme }) => ({
   },
 }));
 
-
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const theme = useTheme();
+  const [pathname, setPathname] = useState<string>('');
+
+  useEffect(() => {
+    setPathname(window.location.pathname);
+  }, []);
 
   return (
     <StyledDrawer
@@ -77,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <ListItem key={text} disablePadding>
             <Link href={`/docs/${text.toLowerCase()}`} passHref legacyBehavior>
               <StyledListItemButton
-                selected={`/docs/${text.toLowerCase()}` === window.location.pathname}
+                selected={`/docs/${text.toLowerCase()}` === pathname}
               >
                 <StyledListItemIcon>
                   {index === 0 && <LibraryBooksIcon />} {index === 0 && <DescriptionIcon />}

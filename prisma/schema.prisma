@@ -98,3 +98,14 @@ model Setting {
     value String
     @@map("Settings")
 }
+
+model DashboardData {
+  id           String @id @default(cuid())
+  overview     String
+  quickActions String
+  recentActivity String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("DashboardData")
+}

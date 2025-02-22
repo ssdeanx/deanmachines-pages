@@ -21,7 +21,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
     width: 260,
     background: theme.palette.grey[900],
-    color: theme.palette.common.white,
+    color: theme.palette.common?.white,
     borderRight: `1px solid ${theme.palette.divider}`,
     boxShadow: theme.shadows[8],
     transition: theme.transitions.create('width', {
@@ -33,19 +33,19 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   '&:hover': {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme.palette?.action?.hover,
     '& .MuiListItemIcon-root': {
-      color: theme.palette.primary.light,
+      color: theme.palette?.primary?.light,
     },
   },
   '&.Mui-selected': {
     backgroundColor: theme.palette.primary.main,
-    color: theme.palette.common.white,
+    color: theme.palette.common?.white,
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
     },
     '& .MuiListItemIcon-root': {
-      color: theme.palette.common.white,
+      color: theme.palette.common?.white,
     },
   },
 }));

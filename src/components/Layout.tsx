@@ -3,20 +3,22 @@ import React from 'react';
 import Footer from './Footer';
 import Navbar from './Navbar';
 import { Box, Container, useTheme } from '@mui/material';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { useRouter } from 'next/router';
+import type { PaletteMode } from '@mui/material';
 
 interface LayoutProps {
   children: React.ReactNode;
   toggleColorMode: () => void;
+  mode: PaletteMode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, toggleColorMode }) => {
+const Layout: React.FC<LayoutProps> = ({ children, toggleColorMode, mode }) => {
   const theme = useTheme();
   const router = useRouter();
   const isDocsPage = router.pathname.startsWith('/docs');
 
-  const pageVariants = {
+  const pageVariants: Variants = {
     initial: {
       opacity: 0,
       y: 20
@@ -42,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children, toggleColorMode }) => {
           : `linear-gradient(to bottom, ${theme.palette.background.default}, ${theme.palette.grey[100]})`,
       }}
     >
-      <Navbar toggleColorMode={toggleColorMode} />
+      <Navbar toggleColorMode={toggleColorMode} mode={mode} />
       <Box
         component={motion.main}
         initial="initial"

@@ -41,6 +41,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ErrorBoundary Component Update:**
   - Refactored `ErrorBoundary.tsx` to a functional component using `useState` and `useCallback` hooks for improved code structure and alignment with MUI v6+ best practices.
 
+### Theme System Improvements
+
+- **Centralized Type Definitions:**
+  - Removed duplicate theme declarations from `Navbar.tsx` and `_app.tsx`
+  - Consolidated all theme type extensions in `theme.ts`
+  - Added proper type declarations for custom palette options
+  - Fixed circular type references in palette definitions
+
+### Type Safety Enhancements
+
+- **Theme Palette Fixes:**
+  - Added missing `divider`, `warning`, and other standard MUI palette types
+  - Removed duplicate `warning` property declarations
+  - Implemented proper type augmentation for Material-UI components
+
+### Component Updates
+
+- **Navbar Type Fixes:**
+  - Removed local theme type declarations causing conflicts
+  - Updated palette access to use centralized type definitions
+  - Fixed optional chaining syntax in `Sidebar.tsx`
+
+### Documentation
+
+- **Changelog Updates:**
+  - Added entries for theme system improvements and type safety fixes
+
 ## [0.3.0] - 2025-02-07
 
 ### Authentication Implemented

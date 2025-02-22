@@ -1,5 +1,7 @@
-import type { ThemeOptions } from '@mui/material/styles';
-import { PaletteMode, PaletteOptions, PaletteColorOptions, Color, useMediaQuery } from '@mui/material';
+import type { ThemeOptions, PaletteMode, TypeBackground, TypeText } from '@mui/material/styles';
+import { PaletteOptions, PaletteColorOptions, Color, PaletteColor } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
+import type { TypographyOptions } from '@mui/material/styles/createTypography';
 
 // Define a specific type for palette colors
 interface MyPaletteColor {
@@ -10,15 +12,52 @@ interface MyPaletteColor {
 }
 
 interface CustomPaletteOptions extends PaletteOptions {
-  accent?: PaletteColorOptions;
-  primary: MyPaletteColor;
-  secondary: MyPaletteColor;
   mode: PaletteMode;
+  grey: Color;
+  primary: PaletteColor;
+  secondary: PaletteColor;
+  background: TypeBackground;
+  text: TypeText;
+  accent?: PaletteColor;
+  divider: string;
+  // Add standard MUI color schemes
+  error?: PaletteColor;
+  warning?: PaletteColor;
+  info?: PaletteColor;
+  success?: PaletteColor;
 }
+
+// Add complete grey scale
+const greyScale = {
+  50: '#fafafa',
+  100: '#f5f5f5',
+  200: '#eeeeee',
+  300: '#e0e0e0',
+  400: '#bdbdbd',
+  500: '#9e9e9e',
+  600: '#757575',
+  700: '#616161',
+  800: '#424242',
+  900: '#212121',
+  A100: '#f5f5f5',
+  A200: '#eeeeee',
+  A400: '#bdbdbd',
+  A700: '#616161',
+};
 
 // Modern and Sleek Color Palette
 const lightPalette: CustomPaletteOptions = {
-  mode: 'light' as PaletteMode,
+  mode: 'light',
+  grey: greyScale,
+  background: {
+    paper: '#ffffff',
+    default: '#f8f9fa',
+  },
+  text: {
+    primary: 'rgba(0, 0, 0, 0.87)',
+    secondary: 'rgba(0, 0, 0, 0.6)',
+    disabled: 'rgba(0, 0, 0, 0.38)',
+  },
   primary: {
     main: '#007BFF',
     light: '#33ACFF',
@@ -31,14 +70,6 @@ const lightPalette: CustomPaletteOptions = {
     dark: '#4D5154',
     contrastText: '#fff',
   },
-  background: {
-    default: '#F8F9FA',
-    paper: '#FFFFFF',
-  },
-  text: {
-    primary: 'rgba(0, 0, 0, 0.87)',
-    secondary: 'rgba(0, 0, 0, 0.6)',
-  },
   accent: {
     main: '#FFC107',
     light: '#FFD54F',
@@ -47,20 +78,43 @@ const lightPalette: CustomPaletteOptions = {
   },
   error: {
     main: '#F44336',
+    light: '#E53935',
+    dark: '#C62828',
+    contrastText: '#fff',
   },
   warning: {
     main: '#FF9800',
+    light: '#FFB74D',
+    dark: '#F57C00',
+    contrastText: 'rgba(0, 0, 0, 0.87)',
   },
   info: {
     main: '#2196F3',
+    light: '#63C0FF',
+    dark: '#0065A6',
+    contrastText: '#fff',
   },
   success: {
     main: '#4CAF50',
+    light: '#81C784',
+    dark: '#388E3C',
+    contrastText: '#fff',
   },
+  divider: 'rgba(0, 0, 0, 0.12)',
 };
 
 const darkPalette: CustomPaletteOptions = {
-  mode: 'dark' as PaletteMode,
+  mode: 'dark',
+  grey: greyScale,
+  background: {
+    paper: '#1e1e1e',
+    default: '#121212',
+  },
+  text: {
+    primary: '#ffffff',
+    secondary: 'rgba(255, 255, 255, 0.7)',
+    disabled: 'rgba(255, 255, 255, 0.38)',
+  },
   primary: {
     main: '#007BFF',
     light: '#33ACFF',
@@ -73,14 +127,6 @@ const darkPalette: CustomPaletteOptions = {
     dark: '#777B7E',
     contrastText: '#fff',
   },
-  background: {
-    default: '#121212',
-    paper: '#1E1E1E',
-  },
-  text: {
-    primary: 'rgba(255, 255, 255, 0.95)',
-    secondary: 'rgba(255, 255, 255, 0.7)',
-  },
   accent: {
     main: '#FFD740',
     light: '#FFEE58',
@@ -89,19 +135,37 @@ const darkPalette: CustomPaletteOptions = {
   },
   error: {
     main: '#F44336',
+    light: '#E53935',
+    dark: '#C62828',
+    contrastText: '#fff',
   },
   warning: {
     main: '#FF9800',
+    light: '#FFB74D',
+    dark: '#F57C00',
+    contrastText: 'rgba(0, 0, 0, 0.87)',
   },
   info: {
     main: '#29B6F6',
+    light: '#63C0FF',
+    dark: '#0065A6',
+    contrastText: '#fff',
   },
   success: {
-    main: '#66BB6A',
+    main: '#4CAF50',
+    light: '#81C784',
+    dark: '#388E3C',
+    contrastText: '#fff',
   },
+  divider: 'rgba(255, 255, 255, 0.12)',
 };
 
-const typography: ThemeOptions['typography'] = {
+// Add code variant to typography options
+interface CustomTypographyOptions extends TypographyOptions {
+  code?: React.CSSProperties;
+}
+
+const typography: CustomTypographyOptions = {
   fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   h1: {
     fontWeight: 700,
@@ -170,8 +234,6 @@ const typography: ThemeOptions['typography'] = {
   code: {
     fontFamily: '"Roboto Mono", monospace',
     fontSize: '0.9rem',
-    backgroundColor: darkPalette.background?.paper,
-    color: darkPalette.text?.primary,
     padding: '0.2rem 0.5rem',
     borderRadius: 4,
   },
@@ -231,7 +293,7 @@ const components: ThemeOptions['components'] = {
   MuiCssBaseline: {
     styleOverrides: {
       body: {
-        backgroundColor: lightPalette.background?.default,
+        backgroundColor: lightPalette.background?.default, // Defaults to light mode
       },
     },
   },
@@ -246,11 +308,11 @@ const components: ThemeOptions['components'] = {
         fontWeight: 600,
         padding: '8px 16px',
         '&:hover': {
-          backgroundColor: lightPalette.primary.dark,
+          backgroundColor: lightPalette.primary.dark, // Defaults to light mode
         },
       },
       containedPrimary: {
-        color: lightPalette.primary.contrastText,
+        color: lightPalette.primary.contrastText, // Defaults to light mode
       },
     },
   },
@@ -261,8 +323,8 @@ const components: ThemeOptions['components'] = {
     },
     styleOverrides: {
       root: {
-        backgroundColor: lightPalette.background?.paper,
-        color: lightPalette.text?.primary,
+        backgroundColor: lightPalette.background?.paper, // Defaults to light mode
+        color: lightPalette.text?.primary, // Defaults to light mode
         borderBottom: `1px solid rgba(0, 0, 0, 0.12)`,
       },
     },
@@ -280,10 +342,10 @@ const components: ThemeOptions['components'] = {
     },
     styleOverrides: {
       root: {
-        color: lightPalette.primary?.main,
+        color: lightPalette.primary?.main, // Defaults to light mode
         fontWeight: 500,
         '&:hover': {
-          color: lightPalette.primary?.dark,
+          color: lightPalette.primary?.dark, // Defaults to light mode
         },
       },
     },
@@ -319,14 +381,14 @@ const components: ThemeOptions['components'] = {
     styleOverrides: {
       root: {
         borderRadius: 8,
-        backgroundColor: lightPalette.background?.paper,
+        backgroundColor: lightPalette.background?.paper, // Defaults to light mode
       },
     },
   },
    MuiPaper: {
     styleOverrides: {
       root: {
-        backgroundColor: lightPalette.background?.paper,
+        backgroundColor: lightPalette.background?.paper, // Defaults to light mode
       }
     }
   },
@@ -363,19 +425,50 @@ const components: ThemeOptions['components'] = {
   },
 };
 
-// Theme configuration object
-// Function to determine theme based on system preference
-const themeConfig = () => {
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
-  return {
-    palette: prefersDarkMode ? darkPalette : lightPalette,
-    typography: typography,
-    spacing: spacing,
-    shadows: shadows,
-    transitions: transitions,
-    components: components,
-  } as const;
+// Add code style definition
+const codeStyle = {
+  fontFamily: '"Roboto Mono", monospace',
+  fontSize: '0.9rem',
+  padding: '0.2rem 0.5rem',
+  borderRadius: 4,
+  backgroundColor: 'rgba(0, 0, 0, 0.05)',
 };
+
+// CORRECTED THEME CONFIGURATION
+const themeConfig = (mode: PaletteMode = 'light') => {
+  const palette = {
+    ...(mode === 'dark' ? darkPalette : lightPalette),
+    mode, // Explicit mode declaration
+    grey: greyScale // Full color scale
+  } as CustomPaletteOptions;
+
+  return createTheme({
+    palette,
+    typography: {
+      ...typography,
+      code: codeStyle, // Now properly references defined codeStyle
+    },
+    spacing,
+    shadows,
+    transitions,
+    components
+  });
+};
+
+// Ensure theme module augmentation matches MUI's structure
+declare module '@mui/material/styles' {
+  interface Theme {
+    palette: CustomPaletteOptions;
+  }
+  interface ThemeOptions {
+    palette?: PaletteOptions;
+  }
+  interface TypographyVariants {
+    code: React.CSSProperties;
+  }
+  interface TypographyVariantsOptions {
+    code?: React.CSSProperties;
+  }
+}
 
 export default themeConfig;
